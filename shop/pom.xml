@@ -38,7 +38,7 @@
 	 <dependency>
         <groupId>io.opentelemetry</groupId>
         <artifactId>opentelemetry-bom</artifactId>
-        <version>0.14.1</version>
+        <version>0.15.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -63,12 +63,15 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
     </dependency>
-    
-    		<dependency>
-	            <groupId>io.opentelemetry</groupId>
-		          <artifactId>opentelemetry-api</artifactId>
-			
-				</dependency>
+    <dependency>
+	    <groupId>io.opentelemetry</groupId>
+	    <artifactId>opentelemetry-api</artifactId>		
+	</dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-extension-annotations</artifactId>
+      <version>0.15.0</version>
+    </dependency>
     
 </dependencies>
 

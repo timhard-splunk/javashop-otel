@@ -7,17 +7,17 @@ import java.math.BigDecimal;
 public class Product {
     private String id;
     private String name;
-    private String description;
+    private String category;
     private BigDecimal price;
 
     public Product() {
         // Needed for Jackson deserialization
     }
 
-    public Product(String id, String name, String description, BigDecimal price) {
+    public Product(String id, String name, String category, BigDecimal price) {
         this.id = id;
         this.name = name;
-        this.description = description;
+        this.category = category;
         this.price = price;
     }
 
@@ -32,8 +32,8 @@ public class Product {
     }
 
     @JsonProperty
-    public String getDescription() {
-        return description;
+    public String getCategory() {
+        return category;
     }
 
     @JsonProperty

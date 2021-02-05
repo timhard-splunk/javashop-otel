@@ -17,6 +17,6 @@ public class ProductResource {
 
     @RequestMapping()
     public List<Product> getProducts() {
-        return productService.getProducts();
+        return productService.getProductsByCategory("v2", "123");
     }
 }

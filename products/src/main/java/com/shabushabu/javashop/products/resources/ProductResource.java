@@ -12,8 +12,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
+import java.util.Random;
 
-@Path("/products")
+@Path("/api")
 @Produces(MediaType.APPLICATION_JSON)
 public class ProductResource {
 
@@ -26,7 +27,9 @@ public class ProductResource {
 
     @GET
     @Timed
-    public Response getAllProducts() {
+    @Path("v1")
+    public Response getAllProducts() { 
+        reallyLongLookup();
         return Response.status(200)
                 .entity(productService.getAllProducts())
                 .build();
@@ -34,7 +37,18 @@ public class ProductResource {
 
     @GET
     @Timed
-    @Path("{id}")
+    @Path("v2")
+    public Response getAllProductV2() {
+        return Response.status(200)
+                .entity(productService.getAllProducts())
+                .build();
+    }
+
+
+    //TODO Remove this endpoint if category filtering works on shop side
+    @GET
+    @Timed
+    @Path("v1/{id : \\d+}")
     public Response getProduct(@PathParam("id") String id) {
         Optional<Product> result = productService.getProduct(id);
 
@@ -46,5 +60,13 @@ public class ProductResource {
             return Response.status(Response.Status.NOT_FOUND)
                     .build();
         }
+    }
+
+    public static void reallyLongLookup() {
+        Random random = new Random();
+        int sleepy = random.nextInt(5000 - 3000) + 3000;
+        try{
+        Thread.sleep(sleepy);
+        } catch (Exception e){}
     }
 }

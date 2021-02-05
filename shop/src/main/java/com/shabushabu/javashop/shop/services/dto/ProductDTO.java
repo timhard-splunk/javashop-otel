@@ -5,16 +5,16 @@ import java.math.BigDecimal;
 public class ProductDTO {
     private String id;
     private String name;
-    private String description;
+    private String category;
     private BigDecimal price;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(String id, String name, String description, BigDecimal price) {
+    public ProductDTO(String id, String name, String category, BigDecimal price) {
         this.id = id;
         this.name = name;
-        this.description = description;
+        this.category = category;
         this.price = price;
     }
 
@@ -26,8 +26,8 @@ public class ProductDTO {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCategory() {
+        return category;
     }
 
     public BigDecimal getPrice() {

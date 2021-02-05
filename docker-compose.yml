@@ -1,17 +1,17 @@
 version: '3'
 services:
   shop:
-    image: shabushabu/shop
+    image: timhard/shabu-shop:latest
     ports:
      - "8010:8010"
     links:
       - products
       - stock
   products:
-    image: shabushabu/products
+    image: timhard/shabu-products:latest
     ports:
      - "8020:8020"
   stock:
-    image: shabushabu/stock
+    image: timhard/shabu-stock:latest
     ports:
      - "8030:8030"

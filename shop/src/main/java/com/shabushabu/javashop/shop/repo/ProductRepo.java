@@ -26,9 +26,10 @@ public class ProductRepo {
     private RestTemplate restTemplate;
 
 
-    public Map<String, ProductDTO> getProductDTOs() {
+    //TODO Remove this if the category filtering in Product Service works
+    public Map<String, ProductDTO> getProductDTOsByCategory(String apiv, String category) {
         ResponseEntity<List<ProductDTO>> productCatalogueResponse =
-                restTemplate.exchange(productsUri + "/products",
+                restTemplate.exchange(productsUri + "/api/" + apiv,
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDTO>>() {
                         });
         List<ProductDTO> productDTOs = productCatalogueResponse.getBody();
@@ -36,4 +37,17 @@ public class ProductRepo {
         return productDTOs.stream()
                 .collect(Collectors.toMap(ProductDTO::getId, Function.identity()));
     }
+
+
+    public Map<String, ProductDTO> getProductDTOs(String apiv) {
+        ResponseEntity<List<ProductDTO>> productCatalogueResponse =
+                restTemplate.exchange(productsUri + "/api/" + apiv,
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDTO>>() {
+                        });
+        List<ProductDTO> productDTOs = productCatalogueResponse.getBody();
+
+        return productDTOs.stream()
+                .collect(Collectors.toMap(ProductDTO::getId, Function.identity()));
+    }
+    
 }

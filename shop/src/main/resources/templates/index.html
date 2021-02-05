@@ -10,7 +10,7 @@
 
   
   
-    <title>JavaShop</title>
+    <title>Buttercup Games</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -27,68 +27,56 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-
-
 <div>   
-    
-    <div><div style="float:left;margin:0px 50px"><img th:src="splunk.jpg" alt="logo" width="200" height="200" /></div><div><h2>Javashop</h2></div></div>
-   	
-     <div>
-        <form action="#" th:action="@{/adduser}" th:object="${user}" method="post">
-    	<p>Name:  <input type="text" th:field="*{name}" /></p>
-    	    <!--    <form method="post">
-        		Name : <input type="text" name="name" />
-        		Color : <input type="text" name="color" /> 
-        		<input type="submit" />
-    		</form>
-    		
-    	-->
-    	<p>Color: <select th:field="*{color}">
-    		<option th:value="Blue" th:text="Blue"></option>
-    		<option th:value="Green" th:text="Green"></option>
-    		<option th:value="Red" th:text="Red"></option>
-		</select> 
-		</p>
+<div>
+    <div style="float:left;margin:0px 50px"><img th:src="splunk.jpg" alt="logo" width="200" height="200" /></div>
+    <div><h2>Buttercup Games Inventory System</h2></div>
+</div>
+<div>
+    <form action="#" th:action="@{/getProducts}" th:object="${store}" method="POST">
+  	<p>Store Location:  <input type="text"  th:field="*{location}"/></p>
+   	<p>Category: <select th:field="*{category}">
+        <option th:value="Action-Adventure" th:text="Action-Adventure"></option>
+        <option th:value="RPG" th:text="RPG"></option>
+        <option th:value="Sports" th:text="Sports"></option>
+        <option th:value="Simulation" th:text="Simulation"></option>
+    </select> 
+	</p>
         
-        <p><input type="submit" value="Submit" /> 
-       
+    <p><input type="submit" value="Submit" />    
 	</p> 
 	</form> 
-	
-	</div>
-      
-            
-            <div class="table-responsive">
-
-                <table class="table table-striped" id="product-table">
-                    <thead>
-                    <tr>
-                        <th>Product Num</th>
-                        <th>SKU</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Price £</th>
-                        <th>Qty Available</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="product : ${products}">
-                        <td th:text="${product.id}">1</td>
-                        <td th:text="${product.sku}">12345678</td>
-                        <td th:text="${product.name}">Widget</td>
-                        <td th:text="${product.description}">Widget</td>
-                        <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">1.19</td>
-                        <td th:text="${product.amountAvailable}">2</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped" id="product-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price $</th>
+                <th>Qty Available</th>
+                <th>SKU</th>
+                <th>Product Num</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.name}">Widget</td>
+                <td th:text="${product.category}">Widget</td>
+                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">1.19</td>
+                <td th:text="${product.amountAvailable}">2</td>
+                <td th:text="${product.sku}">12345678</td>
+                <td th:text="${product.id}">1</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>After about 60 seconds click here to view the trace for this transaction:</p>
+    <p><a th:href="${traceId}" target="_blank">View Trace</a></p>
+</div>
+</div>
     
-
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="js/bootstrap.min.js"></script>
 </body>
 </html>
