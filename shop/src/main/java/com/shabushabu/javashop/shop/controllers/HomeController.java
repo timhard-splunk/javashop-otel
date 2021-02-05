@@ -22,7 +22,7 @@ import com.shabushabu.javashop.shop.services.ProductService;
 @Controller
 @RequestMapping(value = "/")
 public class HomeController {
-    static final String APM_URL = "https://app.us1.signalfx.com/#/apm/traces/";
+
 	private static final Tracer s_tracer =
 			GlobalOpenTelemetry.getTracer("javasshop.tracer");
 
@@ -78,4 +78,5 @@ public class HomeController {
 		return apiVersion;
     }
 
+	static final String APM_URL = "https://app.us1.signalfx.com/#/apm/traces/";
 }
