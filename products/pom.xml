@@ -25,6 +25,19 @@
             <artifactId>guice</artifactId>
             <version>${guice.version}</version>
         </dependency>
+    
+    	<dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-bom</artifactId>
+            <version>0.15.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-extension-annotations</artifactId>
+            <version>0.15.0</version>
+        </dependency>
     </dependencies>
 
 

@@ -68,12 +68,12 @@ public String getProducts(@ModelAttribute Store store, Model model) {
 	    span.setAttribute("store.location",store.getLocation());
 		span.setAttribute("product.category", store.getCategory());
         
-        //Do some work
+        //  Do some work
 		model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(true), store.getCategory()));
         model.addAttribute("traceId", APM_URL + Span.current().getSpanContext().getTraceIdAsHexString());
 		    
 		} finally { 
-	          span.end(); //End the span
+	          span.end(); // End the span
 	   	}
     	  return "index";
 	}

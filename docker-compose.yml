@@ -1,17 +1,29 @@
 version: '3'
 services:
   shop:
-    image: timhard/shabu-shop:latest
+    image: timhard/buttercup-shop:latest
     ports:
      - "8010:8010"
     links:
       - products
       - stock
+    environment:
+     - SFX_REALM=${SFX_REALM}
+     - SFX_TOKEN=${SFX_TOKEN}
+     - USERNAME=${USERNAME}
   products:
-    image: timhard/shabu-products:latest
+    image: timhard/buttercup-products:latest
     ports:
      - "8020:8020"
+    environment:
+     - SFX_REALM=${SFX_REALM}
+     - SFX_TOKEN=${SFX_TOKEN}
+     - USERNAME=${USERNAME}
   stock:
-    image: timhard/shabu-stock:latest
+    image: timhard/buttercup-stock:latest
     ports:
      - "8030:8030"
+    environment:
+     - SFX_REALM=${SFX_REALM}
+     - SFX_TOKEN=${SFX_TOKEN}
+     - USERNAME=${USERNAME}

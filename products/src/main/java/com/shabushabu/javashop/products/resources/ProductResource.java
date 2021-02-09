@@ -5,6 +5,10 @@ import com.google.inject.Inject;
 import com.shabushabu.javashop.products.services.ProductService;
 import com.shabushabu.javashop.products.model.Product;
 
+
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,8 +32,11 @@ public class ProductResource {
     @GET
     @Timed
     @Path("v1")
+    @WithSpan
     public Response getAllProducts() { 
         reallyLongLookup();
+        Span span = Span.current();
+        span.addEvent("API v1 is deprecated. Please use API v2");
         return Response.status(200)
                 .entity(productService.getAllProducts())
                 .build();
@@ -38,28 +45,11 @@ public class ProductResource {
     @GET
     @Timed
     @Path("v2")
+    @WithSpan
     public Response getAllProductV2() {
         return Response.status(200)
                 .entity(productService.getAllProducts())
                 .build();
-    }
-
-
-    //TODO Remove this endpoint if category filtering works on shop side
-    @GET
-    @Timed
-    @Path("v1/{id : \\d+}")
-    public Response getProduct(@PathParam("id") String id) {
-        Optional<Product> result = productService.getProduct(id);
-
-        if (result.isPresent()) {
-            return Response.status(Response.Status.OK)
-                    .entity(result.get())
-                    .build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .build();
-        }
     }
 
     public static void reallyLongLookup() {
