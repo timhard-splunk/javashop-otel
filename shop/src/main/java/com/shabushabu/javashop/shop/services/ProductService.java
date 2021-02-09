@@ -8,6 +8,7 @@ import com.shabushabu.javashop.shop.repo.ProductRepo;
 import com.shabushabu.javashop.shop.services.dto.ProductDTO;
 import com.shabushabu.javashop.shop.services.dto.StockDTO;
 
+import io.opentelemetry.context.Scope;
 import io.opentelemetry.extension.annotations.WithSpan;
 
 import java.util.Collections;
