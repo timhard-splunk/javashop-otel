@@ -49,9 +49,9 @@ Please ensure you have a Splunk Infrastructure Monitoring and APM environment. T
 
 
 ```java
-//Instantiate a Tracer object 
+// Instantiate a Tracer object 
 private static final Tracer s_tracer =
-		GlobalOpenTelemetry.getTracer("javasshop.tracer");
+        GlobalOpenTelemetry.getTracer("javasshop.tracer");
 ```
 
 Creating span via the s_tracer object
@@ -59,24 +59,25 @@ Creating span via the s_tracer object
 @PostMapping("/getProducts")
 public String getProducts(@ModelAttribute Store store, Model model) {
     	 
-	// Create Span
-	Span span = s_tracer.spanBuilder("getProductsController").startSpan();
+    // Create Span
+    Span span = s_tracer.spanBuilder("getProductsController").startSpan();
     // Put the span into the current Context
-	try (Scope scope = span.makeCurrent()) {
+    try (Scope scope = span.makeCurrent()) {
 	     
-		// Set custom store.location and product.category attributes 
-	    span.setAttribute("store.location",store.getLocation());
-		span.setAttribute("product.category", store.getCategory());
+        // Set custom store.location and product.category attributes 
+	span.setAttribute("store.location",store.getLocation());
+	span.setAttribute("product.category", store.getCategory());
         
         //  Do some work
-		model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(true), store.getCategory()));
+	model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(true), store.getCategory()));
         model.addAttribute("traceId", APM_URL + Span.current().getSpanContext().getTraceIdAsHexString());
 		    
-		} finally { 
-	          span.end(); // End the span
-	   	}
-    	  return "index";
+	} finally { 
+	    span.end(); // End the span 
 	}
+    	
+    return "index";
+}
 ```
 
 creating a span using the ```@WithSpan``` annotation
@@ -84,21 +85,24 @@ creating a span using the ```@WithSpan``` annotation
 ```java
 @WithSpan //Use the @WithSpan annotation to automatically instrument the method. 
 public String loadBalanceAPIVersion(Boolean loadbalance) {
-	Span span = Span.current();
-	String apiVersion;
+    
+    // Get the current span so that attributes can be added to it.
+    Span span = Span.current();
+    String apiVersion;
 
-	if (loadbalance){
-		Random pickapi = new Random();
-		if(pickapi.nextBoolean()){
-		    apiVersion = "v1";
-			} else apiVersion = "v2";
-		} else apiVersion = "v2";
+    if (loadbalance){
+        Random pickapi = new Random();
+        if(pickapi.nextBoolean()){
+            apiVersion = "v1";
+	} else apiVersion = "v2";
+    } else apiVersion = "v2";
         
-        //Set a custom attribute and event 
-		span.setAttribute("api.version", apiVersion);
-		span.addEvent("Our Crystal Ball Chose API Version: " + apiVersion);
-		return apiVersion;
-    }
+    //Set a custom attribute and event 
+    span.setAttribute("api.version", apiVersion);
+    span.addEvent("Our Crystal Ball Chose API Version: " + apiVersion);
+
+    return apiVersion;
+}
 
 ```
 
