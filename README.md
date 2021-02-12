@@ -211,7 +211,7 @@ It is a common practice to inject the Trace ID into application logs or exceptio
 
 At the bottom of the Buttercup Games Inventory Application the Trace ID for each transaction will be displayed, there is also a link allowing you to directly view the individual trace. Note it can take a minute for the trace to be searchable in Splunk APM.
 
-![View Trace URL](/images/view_trace.png)
+![View Trace URL](/images/view_trace_url.png)
 
 # Building the Application From Source
 >TODO steps for building app from source
