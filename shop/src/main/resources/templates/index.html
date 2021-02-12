@@ -36,6 +36,7 @@
     <form action="#" th:action="@{/getProducts}" th:object="${store}" method="POST">
   	<p>Store Location:  <input type="text"  th:field="*{location}"/></p>
    	<p>Category: <select th:field="*{category}">
+        <option th:value="All" th:text="All"></option>
         <option th:value="Action-Adventure" th:text="Action-Adventure"></option>
         <option th:value="RPG" th:text="RPG"></option>
         <option th:value="Sports" th:text="Sports"></option>

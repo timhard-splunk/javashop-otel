@@ -25,7 +25,7 @@ public class HomeController {
 
 	//Instantiate the Tracer interface 
 	private static final Tracer s_tracer =
-			GlobalOpenTelemetry.getTracer("javasshop.tracer");
+			GlobalOpenTelemetry.getTracer("shop.tracer");
 
     @Autowired
     private ProductService productService;
@@ -52,7 +52,12 @@ public class HomeController {
 			span.setAttribute("product.category", store.getCategory());
             
 			// Do some work
-		    model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(true), store.getCategory()));
+			if(store.getCategory().equals("All")){
+				model.addAttribute("products", productService.getProducts(loadBalanceAPIVersion(ConfigController.getLoadBalancer())));
+			} else {
+				model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(ConfigController.getLoadBalancer()), store.getCategory()));
+			}
+
 			model.addAttribute("traceId", Span.current().getSpanContext().getTraceIdAsHexString());
             model.addAttribute("traceIdURL", APM_URL + Span.current().getSpanContext().getTraceIdAsHexString());
     
@@ -63,11 +68,15 @@ public class HomeController {
     	  return "index";
 	}
 
-    @WithSpan
+    @WithSpan //Use the @WithSpan annotation to automatically instrument the method.
     public String loadBalanceAPIVersion(Boolean loadbalance) {
+		
+		// Put the span into the current Context
 		Span span = Span.current();
+		
 		String apiVersion;
 
+		// Do some work
 	    if (loadbalance){
 			Random pickapi = new Random();
 		    if(pickapi.nextBoolean()){
@@ -75,10 +84,13 @@ public class HomeController {
 			} else apiVersion = "v2";
 		} else apiVersion = "v2";
 			
+		//Set a custom attribute and event 
 		span.setAttribute("api.version", apiVersion);
 		span.addEvent("Our Crystal Ball Chose API Version: " + apiVersion);
+		
 		return apiVersion;
     }
 
+	// Used to create the trace URL 
 	static final String APM_URL = "https://app.us1.signalfx.com/#/apm/traces/";
 }

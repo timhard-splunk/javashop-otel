@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+  
+  
+    <title>Buttercup Games Config</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+<!--
+   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+-->
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div>   
+<div>
+    <div style="float:left;margin:0px 50px"><img th:src="splunk.jpg" alt="logo" width="200" height="200" /></div>
+    <div><h2>Buttercup Games Config</h2></div>
+</div>
+<div>
+    <p>When the Load Balancer is enabled about 50% of the transactions will hit the slow version of the API.</p>
+    <p>Load Balancer Status: <b><span th:text="${status}"></span></b> (Default: Enabled)</p>
+
+    <div>
+        <form action="#" th:action="@{/Config}" th:object="${config}" method="GET">
+            <p>
+                <input type="radio" id="Enable" name="Enable" th:value="true" th:text="Enable" th:field="*{lb}"/>
+                <input type="radio" id="Disable" name="Disable" th:value="false" th:text="Disable" th:field="*{lb}"/>
+            </p>            
+        <p><input type="submit" value="Submit" />    
+        </p> 
+        </form> 
+    </div>
+
+</div>
+</div>
+    
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+</body>
+</html>

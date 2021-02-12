@@ -45,16 +45,22 @@ Please ensure you have a Splunk Infrastructure Monitoring and APM environment. T
 
 ## 1: Review Span Attributes Code
 
->TODO Provide details of code snippets. 
+For most users, the out-of-the-box Auto-instrumentation is completely sufficient and nothing more has to be done. Sometimes, however, users wish to add attributes to the otherwise automatic spans. A common need is to capture additional application-specific or business-specific information as additional attributes to an existing span from the automatic instrumentation.
 
+Here we will review different ways span attributes can be captured. All examples referenced are from the ```HomeController``` class within the ```shop``` service.
+
+The first example covers manual instrumentation. First, a Tracer must be acquired, which is responsible for creating spans and interacting with the Context. A tracer is acquired by using the OpenTelemetry API specifying the name and version of the library instrumenting the instrumented library or application to be monitored. Important: the "name" and optional version of the tracer are purely informational. All Tracers that are created by a single OpenTelemetry instance will interoperate, regardless of name.
 
 ```java
 //Instantiate a Tracer object 
 private static final Tracer s_tracer =
-		GlobalOpenTelemetry.getTracer("javasshop.tracer");
+		GlobalOpenTelemetry.getTracer("shop.tracer");
 ```
 
-Creating span via the s_tracer object
+Next, create a basic span, you only need to specify the name of the span. The start and end time of the span is automatically set by the OpenTelemetry SDK. In this example the span name is ```getProductController```.
+
+Here is where we define the first two custom attributes: ```store.location``` and ```product.category```. Since this is an example of manual instrumentation the span must be put into current context. the ```span.setAttribute()``` method is used. This method takes two parameters, a key and a value, which are used to define the attribute name and attribute value respectively. In this case we set the attribute name using a string, and use getter methods to set the value.
+
 ```java
 @PostMapping("/getProducts")
 public String getProducts(@ModelAttribute Store store, Model model) {
@@ -78,15 +84,24 @@ public String getProducts(@ModelAttribute Store store, Model model) {
     	  return "index";
 	}
 ```
+Here is the resulting trace with the ```getProductsController``` span expanded. Note the span attributes ```store.location``` and ```product.category``` attributes.
 
-creating a span using the ```@WithSpan``` annotation
+![getProductController](/images/getProducts.png)
+
+Another common situation is to capture a span corresponding to one of your methods. The ```@WithSpan``` annotation makes this straightforward. Each time the application invokes the annotated method, it creates a span that denotes its duration and provides any thrown exceptions. Unless specified as an argument to the annotation, the span name will be ```<className>.<methodName>```. In this example the span will be named ```HomeController.loadBalanceAPIVersion```. 
+
+To add span attributes, we must first access the current span using the Span interface provided by OpenTelemetry. Just like before we can add span attributes using the ```span.setAttribute``` method. Here we are also adding a span event. An event is a human-readable message on a span that represents “something happening” during it’s lifetime. A useful characteristic of events is that their timestamps are displayed as offsets from the beginning of the span, allowing you to easily see how much time elapsed between them.
 
 ```java
 @WithSpan //Use the @WithSpan annotation to automatically instrument the method. 
 public String loadBalanceAPIVersion(Boolean loadbalance) {
+	
+	// Put the span into the current Context
 	Span span = Span.current();
+	
 	String apiVersion;
-
+    
+	// Do some work
 	if (loadbalance){
 		Random pickapi = new Random();
 		if(pickapi.nextBoolean()){
@@ -102,16 +117,29 @@ public String loadBalanceAPIVersion(Boolean loadbalance) {
 
 ```
 
+Here is the resulting trace with the ```HomeController.loadBalanceAPIVersion``` span expanded. Note the span attributes ```api.version``` attribute and the event.
+
+![apiVersion](/images/apiVersion.png)
+
 ## 2: Deploy Buttercup Games Inventory Application :horse:
->TODO Add an instance of the smart agent to the docker-compose configuration.
+
+The pre-packaged Buttercup Games Inventory Application is designed to send emitted traces directly to the Splunk APM backend so no Smart Agent or OpenTelemetry Collector is needed.
+
+There are three variables that must be included. They can be passed directly into the startup command or exported as environment variables.
+| Config Option | Description |
+| --------------| ------------|
+| SFX_REALM | Specify the name of the realm in which your organization is hosted |
+| SFX_TOKEN | Access Token from SIM/APM Org |
+| USERNAME  | Value appended to the ```environment``` attribute - used to identify services in Splunk APM |  
 
 From the root directory of the project run:
 
 ```
-docker-compose up -d 
+SFX_REALM=${SFX_REALM} SFX_TOKEN=${SFX_TOKEN} USERNAME=${USERNAME} docker-compose up -d 
 ```
-The `-d` flag runs the containers in detached mode.  
+
 If everything is successful, you should receive the following output:
+
 ```bash
 $ docker-compose up -d
 Starting javashop-otel_products_1 ... done
@@ -120,13 +148,15 @@ Recreating javashop-otel_shop_1   ... done
 ```
 
 ## 3: Execute Transactions
-The ```shop``` service is the entrypoint for the Buttercup Games Inventory application. This service exposes port ```8010```. You can access the application from your favorite browser at 
+The ```shop``` service is the entrypoint for the Buttercup Games Inventory application. This service exposes port ```8010```. You can access the application from your favorite browser at: 
 ```
 http://localhost:8010
 ``` 
-From the home page enter any value in the ```Store Location``` field, chose a ```Category```, and hit ```Submit```. You can do this as many times as you would like. Each time the submit button is hit, a new trace will be generated. 
+From the home page enter any value in the ```Store Location``` field, chose a ```Category```, and hit ```Submit```. You can do this as many times as you would like. Each time the submit button is hit, a new trace will be generated.
 
 The values used for ```Store Location``` and ```Category``` will be the values that are applied to the custom attributes ```store.location``` and ```product.category``` respectively.
+
+![Tag Spotlight](/images/homescreen.png)
 
 You should notice about half of the time when clicking the submit button the application will hang for few seconds. This is user experience is unacceptable so next we will investigate the problem using Splunk APM.
 
@@ -173,9 +203,18 @@ In the bottom right corner select ```Show Traces``` to view the individual trans
 
 ![Filtered Traces](/images/filtered_traces.png)
 
->TODO traceID search example (update homepage to include traceID)
+It is a common practice to inject the Trace ID into application logs or exceptions. We can use the Trace ID to search for a specific individual transaction. Traces to be shard amongst teams, attached to support cases, or other troubleshooting exercises. This can be done by entering the trace into the View Trace ID search bar from the Splunk APM ```Show Traces``` page or by passing the Trace ID into the Splunk APM Trace URL ```https://app.${SFX_REALM}.signalfx.com/#/apm/traces/${traceID}``` (Note the SFX_REALM).
 
+![View Trace Search Bar](/images/view_trace.png)
 
+At the bottom of the Buttercup Games Inventory Application the Trace ID for each transaction will be displayed, there is also a link allowing you to directly view the individual trace. Note it can take a minute for the trace to be searchable in Splunk APM.
+
+![View Trace URL](/images/view_trace.png)
+
+# Building the Application From Source
+>TODO steps for building app from source
 
 # Additional Resources
->TODO Provide links to additional resources, examples, etc 
+>TODO Provide links to additional resources, examples, etc
+[Splunk Distribution of OpenTelemetry Java Instrumentation](https://github.com/signalfx/splunk-otel-java)
+
