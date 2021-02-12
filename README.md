@@ -52,7 +52,7 @@ Here we will review different ways span attributes can be captured. All examples
 The first example covers manual instrumentation. First, a Tracer must be acquired, which is responsible for creating spans and interacting with the Context. A tracer is acquired by using the OpenTelemetry API specifying the name and version of the library instrumenting the instrumented library or application to be monitored. Important: the "name" and optional version of the tracer are purely informational. All Tracers that are created by a single OpenTelemetry instance will interoperate, regardless of name.
 
 ```java
-//Instantiate a Tracer object 
+// Instantiate a Tracer object 
 private static final Tracer s_tracer =
 		GlobalOpenTelemetry.getTracer("shop.tracer");
 ```
@@ -65,24 +65,25 @@ Here is where we define the first two custom attributes: ```store.location``` an
 @PostMapping("/getProducts")
 public String getProducts(@ModelAttribute Store store, Model model) {
     	 
-	// Create Span
-	Span span = s_tracer.spanBuilder("getProductsController").startSpan();
+    // Create Span
+    Span span = s_tracer.spanBuilder("getProductsController").startSpan();
     // Put the span into the current Context
-	try (Scope scope = span.makeCurrent()) {
+    try (Scope scope = span.makeCurrent()) {
 	     
-		// Set custom store.location and product.category attributes 
-	    span.setAttribute("store.location",store.getLocation());
-		span.setAttribute("product.category", store.getCategory());
+        // Set custom store.location and product.category attributes 
+	span.setAttribute("store.location",store.getLocation());
+	span.setAttribute("product.category", store.getCategory());
         
         //  Do some work
-		model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(true), store.getCategory()));
+	model.addAttribute("products", productService.getProductsByCategory(loadBalanceAPIVersion(true), store.getCategory()));
         model.addAttribute("traceId", APM_URL + Span.current().getSpanContext().getTraceIdAsHexString());
 		    
-		} finally { 
-	          span.end(); // End the span
-	   	}
-    	  return "index";
+	} finally { 
+	    span.end(); // End the span 
 	}
+    	
+    return "index";
+}
 ```
 Here is the resulting trace with the ```getProductsController``` span expanded. Note the span attributes ```store.location``` and ```product.category``` attributes.
 
@@ -109,11 +110,12 @@ public String loadBalanceAPIVersion(Boolean loadbalance) {
 			} else apiVersion = "v2";
 		} else apiVersion = "v2";
         
-        //Set a custom attribute and event 
-		span.setAttribute("api.version", apiVersion);
-		span.addEvent("Our Crystal Ball Chose API Version: " + apiVersion);
-		return apiVersion;
-    }
+    //Set a custom attribute and event 
+    span.setAttribute("api.version", apiVersion);
+    span.addEvent("Our Crystal Ball Chose API Version: " + apiVersion);
+
+    return apiVersion;
+}
 
 ```
 
